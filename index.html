@@ -317,11 +317,16 @@
   .wall{
     display:grid; gap:10px;
     grid-template-columns:repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+    grid-auto-rows:max-content; align-content:start;
   }
   .tile{
-    position:relative; aspect-ratio:8/3; border-radius:3px; overflow:hidden;
+    --tile-padding:37.5%;
+    position:relative; border-radius:3px; overflow:hidden;
     background:#07090c; border:1px solid var(--line-soft);
   }
+  /* Reserve card height even before media loads or the wall is expanded. */
+  .tile::before{content:""; display:block; padding-top:var(--tile-padding)}
+  #sim-wall .tile{--tile-padding:50%}
   .tile .half-tag{
     position:absolute; top:6px; z-index:2; font-family:var(--mono); font-size:9.5px;
     color:#fff; padding:2px 8px; border-radius:3px; letter-spacing:.03em;
@@ -340,7 +345,7 @@
     position:absolute; z-index:2; left:50%; top:0; bottom:0; width:1px;
     background:rgba(255,255,255,.25);
   }
-  .tile video{width:100%; height:100%; object-fit:cover; display:block}
+  .tile video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block}
   .tile .tag{
     position:absolute; left:7px; bottom:6px; z-index:2; font-family:var(--mono);
     font-size:9.5px; color:#cdd2d9; background:rgba(12,14,17,.62); padding:2px 8px;
@@ -979,7 +984,7 @@ function copyBib(btn){
   const tiles=[];
   M.forEach(it=>{
     const t=document.createElement('div');
-    t.className='tile'; t.style.aspectRatio='2/1';
+    t.className='tile';
     t.title = it.label;
     const v=document.createElement('video');
     v.muted=true; v.loop=true; v.playsInline=true; v.preload='none';
