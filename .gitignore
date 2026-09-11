@@ -1,0 +1,8 @@
+# Keep manuscript sources out of the public website.
+/static/paper/*.zip
+/static/paper/*.tex
+/static/paper/*.bbl
+/static/paper/*.bib
+/static/paper/*.bst
+/static/paper/*.cls
+/static/paper/*.sty

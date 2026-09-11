@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution</title>
+<link rel="canonical" href="https://devsangho.github.io/GROOVE-public/">
+<meta name="description" content="GROOVE searches directional correction regions around a VLA's 3D end-effector path to reduce execution jerk without retraining or additional policy inference. Results on LIBERO and a physical UR5e.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="icon" type="image/png" href="static/icon_64.png">
+<link rel="apple-touch-icon" href="static/icon_192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/method_abc.css">
+</head>
+<body>
+
+
+<style>
+  :root{
+    --raw:#FF3B30; --ours:#2E6BE8; --ours-text:#6FA8F5; --green:#5daf8d; --plum:#A855F7;
+    --bg:#000000; --bg2:#070707; --panel:#0b0b0b; --line:#1c1c1c; --line-soft:#141414;
+    --ink:#f5f5f5; --muted:#8a8a8a; --faint:#5a5a5a;
+    --wash:rgba(255,255,255,.05);
+    --display:"Google Sans","Google Sans Text","Product Sans","DM Sans",-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --grad:linear-gradient(90deg,#ffffff 0%,#ffffff 100%);
+    --sans:"Google Sans","Google Sans Text","Product Sans","DM Sans",-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    --w-text:730px; --w-wide:1060px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .text{max-width:calc(var(--w-text) + 44px); margin:0 auto; padding:0 22px}
+  .wide{max-width:calc(var(--w-wide) + 44px); margin:0 auto; padding:0 22px}
+  p{margin:0}
+  a{color:#ffffff; text-underline-offset:3px}
+  ::selection{background:rgba(255,255,255,.22); color:#000}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; min-height:100vh; min-height:100svh; display:flex; align-items:center;
+    justify-content:center; overflow:hidden; text-align:center;
+  }
+  .hero .shade{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(120% 90% at 50% 42%, rgba(255,255,255,.028) 0%, rgba(255,255,255,0) 62%),
+      var(--bg);
+  }
+  .hero-content{position:relative; z-index:2; padding:80px 22px 60px; max-width:900px}
+  .brand-row{
+    display:flex; align-items:center; justify-content:center;
+    gap:clamp(14px,2.6vw,34px); margin:14px 0 30px;
+  }
+  .brand-copy{display:flex; flex-direction:column; align-items:flex-start; gap:6px}
+  .brand-row .wordmark{margin:0}
+  .brand-row .full-title{margin:0; text-align:left; max-width:560px}
+  @media(max-width:760px){
+    .brand-row{flex-direction:column; gap:12px; margin-bottom:24px}
+    .brand-copy{align-items:center}
+    .brand-row .full-title{text-align:center}
+  }
+  .mascot{
+    width:clamp(120px,15vw,210px); height:auto; display:block; flex:none;
+    filter:drop-shadow(0 10px 24px rgba(0,0,0,.45));
+  }
+  .over-title{
+    font-size:12px; font-weight:600; letter-spacing:.26em; text-transform:uppercase;
+    color:#c6cbd3; text-shadow:0 1px 12px rgba(0,0,0,.5);
+  }
+  .wordmark{
+    font-family:"Archivo",var(--display); font-weight:900; font-size:clamp(58px,9vw,104px);
+    font-variation-settings:"wdth" 100,"wght" 900; line-height:1; letter-spacing:-.03em;
+    margin:22px 0 0; color:#fff;
+  }
+  .wordmark .wl{display:inline-block; position:relative}
+
+  /* The GROOVE glitch: each letter jerks with raw-red / groove-blue ghosts,
+     then settles smoothly. Amplitude decays G -> E, like the seam being erased. */
+  .wordmark .wl:nth-child(1){--amp:.55}
+  .wordmark .wl:nth-child(2){--amp:.42}
+  .wordmark .wl:nth-child(3){--amp:.3}
+  .wordmark .wl:nth-child(4){--amp:.2}
+  .wordmark .wl:nth-child(5){--amp:.12}
+  .wordmark .wl:nth-child(6){--amp:.05}
+  @media (prefers-reduced-motion: no-preference){
+    .wordmark .wl{
+      opacity:0;
+      animation:
+        wl-settle .85s cubic-bezier(.2,.75,.25,1) both,
+        wl-jerk 6.5s steps(1,end) infinite;
+    }
+    .wordmark .wl:nth-child(1){animation-delay:.10s, 1.6s}
+    .wordmark .wl:nth-child(2){animation-delay:.17s, 1.66s}
+    .wordmark .wl:nth-child(3){animation-delay:.24s, 1.72s}
+    .wordmark .wl:nth-child(4){animation-delay:.31s, 1.78s}
+    .wordmark .wl:nth-child(5){animation-delay:.38s, 1.84s}
+    .wordmark .wl:nth-child(6){animation-delay:.45s, 1.90s}
+  }
+  @keyframes wl-settle{
+    0%{opacity:0; transform:translate(calc(var(--amp)*-14px), 30px) rotate(calc(var(--amp)*-4deg))}
+    38%{opacity:1; transform:translate(calc(var(--amp)*9px), -7px) rotate(calc(var(--amp)*2.4deg))}
+    62%{transform:translate(calc(var(--amp)*-4px), 3px) rotate(calc(var(--amp)*-1.2deg))}
+    82%{transform:translate(calc(var(--amp)*1.6px), -1px)}
+    100%{opacity:1; transform:none}
+  }
+  @keyframes wl-jerk{
+    0%, 78%, 100%{transform:none; text-shadow:none}
+    79%{
+      transform:translate(calc(var(--amp)*-3px), calc(var(--amp)*1.6px)) skewX(calc(var(--amp)*-4deg));
+      text-shadow:calc(var(--amp)*5px) 0 rgba(255,59,48,.75), calc(var(--amp)*-5px) 0 rgba(29,94,221,.75);
+    }
+    81.5%{
+      transform:translate(calc(var(--amp)*3.4px), calc(var(--amp)*-1.8px)) skewX(calc(var(--amp)*3deg));
+      text-shadow:calc(var(--amp)*-6px) 0 rgba(255,59,48,.65), calc(var(--amp)*6px) 0 rgba(29,94,221,.65);
+    }
+    84%{
+      transform:translate(calc(var(--amp)*-2px), calc(var(--amp)*1px));
+      text-shadow:calc(var(--amp)*3px) 0 rgba(255,59,48,.5), calc(var(--amp)*-3px) 0 rgba(29,94,221,.5);
+    }
+    86.5%{
+      transform:translate(calc(var(--amp)*1px), calc(var(--amp)*-0.5px));
+      text-shadow:calc(var(--amp)*1.5px) 0 rgba(255,59,48,.3), calc(var(--amp)*-1.5px) 0 rgba(29,94,221,.3);
+    }
+    89%{transform:none; text-shadow:none}
+  }
+  .gmark{font-weight:700; color:#ffffff}
+  .full-title{
+    font-family:var(--display); font-weight:500; font-size:clamp(18px,2.4vw,23px);
+    line-height:1.45; max-width:620px; margin:0 auto 30px; color:#e2e5ea;
+    text-shadow:0 1px 14px rgba(0,0,0,.6); text-wrap:balance;
+  }
+  .full-title b{font-weight:700; color:#ffffff}
+  .authors{font-family:var(--sans); font-weight:600; font-size:17.5px; color:#eceef1; margin:0 0 8px}
+  .authors span{white-space:nowrap}
+  .authors a{color:inherit; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.35); transition:border-color .2s}
+  .authors a:hover{border-color:var(--ours-text); color:var(--ours-text)}
+  .affil{
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    font-family:var(--sans); font-size:15px; color:#c6cbd3; margin:0 0 30px;
+  }
+  .affil img{width:28px; height:28px; filter:drop-shadow(0 1px 6px rgba(0,0,0,.5))}
+  .affil a{color:inherit; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.3); transition:border-color .2s, color .2s}
+  .affil a:hover{border-color:var(--ours-text); color:var(--ours-text)}
+  .affil{margin-bottom:12px}
+  .affil-details{font-size:13px; color:#aeb4bf; line-height:1.65; margin:0 auto 22px; max-width:690px}
+  .affil-details a{color:inherit}
+  .result-block{max-width:850px; width:100%; margin-left:auto; margin-right:auto}
+  .result-block h3{font-size:22px; line-height:1.35; margin:0 0 14px}
+  .result-block p{margin-bottom:20px}
+  .result-block + .result-block{margin-top:48px}
+  .ci{display:block; font-size:11px; color:#a1a6af; font-weight:400; margin-top:3px}
+  .chart-scroll{overflow-x:auto}
+  .chart-scroll img{display:block; width:100%; min-width:660px}
+  .chart-scroll.physical-chart img{min-width:600px}
+  #acknowledgments{padding-top:0}
+  #acknowledgments p{font-size:14px; color:var(--muted)}
+  .btn-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:inherit;
+    font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    text-decoration:none; color:#fff; border:0;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.32);
+    border-radius:4px; padding:11px 22px; background:rgba(0,0,0,.35);
+    backdrop-filter:blur(6px); transition:background .18s, color .18s, box-shadow .18s;
+  }
+  .btn:hover{background:#fff; color:#000; box-shadow:inset 0 0 0 1px #fff}
+  .btn.disabled{color:rgba(255,255,255,.4); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18); pointer-events:none}
+  .review-note{font-size:12px; color:#aab0b9; margin-top:14px; letter-spacing:.02em}
+  .ieee-notice{max-width:720px; margin-left:auto; margin-right:auto; line-height:1.6}
+
+  /* ---------- Motion ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    .hero-content > *{opacity:0; transform:translateY(18px); animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+    .hero-content > *:nth-child(1){animation-delay:.05s}
+    .hero-content > *:nth-child(2){animation-delay:.15s}
+    .hero-content > *:nth-child(3){animation-delay:.3s}
+    .hero-content > *:nth-child(4){animation-delay:.42s}
+    .hero-content > *:nth-child(5){animation-delay:.52s}
+    .hero-content > *:nth-child(6){animation-delay:.62s}
+    .hero-content > *:nth-child(7){animation-delay:.72s}
+    .hero-content > *:nth-child(8){animation-delay:.82s}
+  }
+  @keyframes rise{to{opacity:1; transform:none}}
+  .hero .glow{
+    position:absolute; z-index:1; left:50%; top:38%; width:900px; height:520px;
+    transform:translate(-50%,-50%); pointer-events:none;
+    background:radial-gradient(closest-side, rgba(29,94,221,.10), rgba(165,131,189,.05) 55%, transparent 75%);
+    filter:blur(10px);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .hero .glow{animation:pulse 9s ease-in-out infinite}
+  }
+  @keyframes pulse{0%,100%{opacity:.7; transform:translate(-50%,-50%) scale(1)}50%{opacity:1; transform:translate(-50%,-50%) scale(1.08)}}
+  .tile{transition:transform .3s ease, border-color .3s ease}
+  .tile:hover{transform:none; border-color:#3a3a3a}
+  .panel{transition:border-color .3s ease}
+
+  /* ---------- Stat band ---------- */
+  .stat-band{
+    position:relative; overflow:hidden; background:var(--bg);
+    border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft);
+  }
+  .mosaic{
+    position:absolute; inset:0; z-index:0; display:grid; gap:2px;
+    grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+    grid-auto-rows:90px; opacity:.72;
+  }
+  .mosaic video{width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.8)}
+  .mosaic-shade{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(120% 100% at 50% 50%, rgba(6,8,11,.38) 0%, rgba(6,8,11,.72) 55%, rgba(6,8,11,.93) 100%),
+      linear-gradient(180deg, rgba(6,8,11,.86) 0%, rgba(6,8,11,.4) 24%, rgba(6,8,11,.4) 76%, rgba(6,8,11,.86) 100%);
+  }
+  .stat-band .stat-row{position:relative; z-index:2; width:100%}
+  .stat-row{display:grid; grid-template-columns:repeat(4,1fr); max-width:var(--w-wide); margin:0 auto}
+  @media(max-width:720px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  .stat{padding:34px 12px 30px; text-align:center; border-left:1px solid rgba(255,255,255,.07)}
+  .stat:first-child{border-left:0}
+  @media(max-width:720px){.stat:nth-child(3){border-left:0}
+    .stat:nth-child(n+3){border-top:1px solid var(--line-soft)}}
+  .stat .big{
+    display:block; font-family:var(--display); font-weight:700;
+    font-size:clamp(24px,3vw,32px); line-height:1.05; letter-spacing:-.02em;
+    text-shadow:0 4px 24px rgba(0,0,0,.65);
+  }
+  .stat .big.raw-c, .stat .big.ours-c{color:#ffffff}
+  .stat .lbl{
+    display:block; font-size:11px; font-weight:500; letter-spacing:.08em;
+    text-transform:uppercase; color:#c3c8d0; line-height:1.6; margin-top:11px;
+    text-shadow:0 2px 10px rgba(0,0,0,.7);
+  }
+
+  /* ---------- Sections ---------- */
+  section{padding:96px 0}
+  section.alt{background:var(--bg2); border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft)}
+  .eyebrow{
+    display:block; text-align:center; font-size:11.5px; font-weight:600;
+    letter-spacing:.3em; text-transform:uppercase; color:var(--muted); margin-bottom:16px;
+  }
+  h2{
+    font-family:var(--display); font-weight:700; font-size:clamp(26px,3.3vw,34px);
+    letter-spacing:-.015em; line-height:1.25; text-align:center; margin:0 0 18px;
+    color:var(--ink); text-wrap:balance;
+  }
+  .lead{
+    text-align:center; color:var(--muted); font-size:16px; line-height:1.75;
+    max-width:640px; margin:0 auto 44px;
+  }
+  .lead b{color:var(--ink); font-weight:600}
+  .stack > * + *{margin-top:28px}
+
+  /* Light plate for paper figures drawn on white */
+  section.light{
+    background:linear-gradient(180deg,#f4f6f9 0%,#eef1f6 100%);
+    border-top:1px solid #dfe4ec; border-bottom:1px solid #dfe4ec;
+  }
+  section.light .eyebrow{color:#3f6ac4}
+  section.light h2{color:#12161c}
+  section.light .lead{color:#4b5361}
+  .fig-plate{
+    background:#fff; border:1px solid #e2e7ef; border-radius:12px;
+    padding:26px 26px 20px; box-shadow:0 18px 40px rgba(18,22,28,.10);
+    max-width:var(--w-wide); margin:0 auto;
+  }
+  .fig-plate img{width:100%; height:auto; display:block; border-radius:0}
+  .fig-plate figcaption{
+    font-size:13px; color:#5a6270; line-height:1.65; margin-top:16px;
+    border-top:1px solid #eceff4; padding-top:14px;
+  }
+  .fig-plate figcaption b{color:#12161c; font-weight:600}
+  .fig-plate .figno{color:#3f6ac4}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:22px}
+  .tldr{
+    border:1px solid var(--line); border-left:2px solid #fff; background:var(--panel);
+    border-radius:4px; padding:26px 28px;
+  }
+  .tldr p{font-size:16px; line-height:1.75; color:#d6d6d6}
+  .tldr p b{color:#fff; font-weight:600}
+  .tldr-list{margin:18px 0 0; padding:0; list-style:none; display:grid; gap:10px}
+  .tldr-list li{
+    font-size:14.5px; line-height:1.6; color:var(--muted);
+    padding-left:18px; position:relative;
+  }
+  .tldr-list li::before{
+    content:""; position:absolute; left:0; top:.62em;
+    width:6px; height:1px; background:#fff; opacity:.8;
+  }
+  .tldr-list b{color:#fff; font-weight:600}
+  figure{margin:0}
+  figure img{width:100%; height:auto; display:block; border-radius:3px}
+  figcaption{font-size:13px; color:var(--muted); line-height:1.65; margin-top:14px}
+  figcaption b{color:var(--ink); font-weight:600}
+  .figno{
+    font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ours-text); margin-right:8px;
+  }
+
+  /* ---------- Video wall ---------- */
+  .wall-controls{display:flex; justify-content:center; gap:12px; margin-bottom:26px; flex-wrap:wrap}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:4px; padding:3px; background:var(--panel)}
+  .seg button{
+    border:0; background:transparent; color:var(--muted); font-family:var(--sans);
+    font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+    padding:8px 22px; border-radius:3px; cursor:pointer; transition:background .18s,color .18s;
+  }
+  .seg button.on{background:#fff; color:#000}
+  .wall{
+    display:grid; gap:10px;
+    grid-template-columns:repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+  }
+  .tile{
+    position:relative; aspect-ratio:8/3; border-radius:3px; overflow:hidden;
+    background:#07090c; border:1px solid var(--line-soft);
+  }
+  .tile .half-tag{
+    position:absolute; top:6px; z-index:2; font-family:var(--mono); font-size:9.5px;
+    color:#fff; padding:2px 8px; border-radius:3px; letter-spacing:.03em;
+  }
+  .tile .half-tag.l{left:7px; background:rgba(255,59,48,.85)}
+  .tile .half-tag.r{left:calc(50% + 7px); background:rgba(29,94,221,.85)}
+  .tile .okmark{
+    position:absolute; bottom:6px; z-index:2; font-family:var(--sans);
+    font-size:8.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+    padding:2px 7px; border-radius:3px;
+  }
+  .tile .okmark.l{right:calc(50% + 7px)} .tile .okmark.r{right:7px}
+  .tile .okmark.success{background:rgba(93,175,141,.92); color:#0c1410}
+  .tile .okmark.fail{background:rgba(20,23,28,.72); color:#aab1bb; border:1px solid rgba(255,255,255,.18)}
+  .tile .mid{
+    position:absolute; z-index:2; left:50%; top:0; bottom:0; width:1px;
+    background:rgba(255,255,255,.25);
+  }
+  .tile video{width:100%; height:100%; object-fit:cover; display:block}
+  .tile .tag{
+    position:absolute; left:7px; bottom:6px; z-index:2; font-family:var(--mono);
+    font-size:9.5px; color:#cdd2d9; background:rgba(12,14,17,.62); padding:2px 8px;
+    border-radius:3px; letter-spacing:.03em;
+  }
+  .tile .ok{position:absolute; right:7px; top:6px; z-index:2; font-size:11px}
+  .tile{cursor:zoom-in}
+  .lightbox{
+    position:fixed; inset:0; z-index:60; display:none;
+    align-items:center; justify-content:center; flex-direction:column; gap:14px;
+    background:rgba(8,10,13,.92); backdrop-filter:blur(8px); padding:30px 20px;
+  }
+  .lightbox.open{display:flex}
+  .lightbox video{
+    max-width:min(1240px,96vw); max-height:78vh; width:auto; height:auto;
+    border-radius:4px; border:1px solid var(--line); background:#000;
+  }
+  .lb-bar{
+    display:flex; align-items:center; gap:16px; font-family:var(--mono);
+    font-size:12.5px; color:var(--muted);
+  }
+  .lb-bar .lb-title{color:var(--ink)}
+  .lb-close{
+    position:absolute; top:18px; right:22px; background:transparent; border:0;
+    color:var(--muted); font-size:30px; line-height:1; cursor:pointer;
+    transition:color .15s;
+  }
+  .lb-close:hover{color:#fff}
+  @media (prefers-reduced-motion: no-preference){
+    .lightbox.open video{animation:lbin .28s cubic-bezier(.2,.7,.2,1)}
+  }
+  @keyframes lbin{from{opacity:0; transform:scale(.94)}to{opacity:1; transform:none}}
+  .wall.collapsed{max-height:640px; overflow:hidden; position:relative}
+  .wall-more{display:flex; justify-content:center; margin-top:18px}
+  .wall-more button{
+    background:var(--panel); border:1px solid var(--line); border-radius:4px;
+    font-family:var(--sans); font-size:11.5px; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink); padding:10px 26px; cursor:pointer; border-radius:4px;
+    transition:background .18s, color .18s, border-color .18s;
+  }
+  .wall-more button:hover{background:#fff; color:#000; border-color:#fff}
+  .wall-fade{
+    position:absolute; left:0; right:0; bottom:0; height:150px; pointer-events:none; z-index:3;
+    background:linear-gradient(180deg, rgba(12,15,20,0), var(--bg2) 88%);
+  }
+  /* the wall is only positioned while collapsed, so hide the fade once expanded */
+  .wall:not(.collapsed) .wall-fade{display:none}
+  section:not(.alt) .wall-fade{background:linear-gradient(180deg, rgba(12,15,20,0), var(--bg) 88%)}
+
+  .wall-note{
+    text-align:center; font-size:13px; color:var(--muted); margin-top:22px; line-height:1.7;
+  }
+
+  /* ---------- Viewer chrome (canvas) ---------- */
+  .viz-canvas{
+    display:block; width:100%; border-radius:3px; touch-action:none; cursor:grab;
+    background:#050505; border:1px solid var(--line);
+  }
+  .viz-canvas:active{cursor:grabbing}
+  .traj-stage{position:relative}
+  .traj-hint{
+    position:absolute; right:12px; bottom:10px; pointer-events:none; font-family:var(--mono);
+    font-size:11px; color:var(--faint); background:rgba(16,19,24,.85);
+    border-radius:999px; padding:3px 11px;
+  }
+  .traj-controls{
+    display:flex; flex-wrap:wrap; gap:9px; align-items:center; justify-content:center;
+    margin-bottom:16px;
+  }
+  .chip{
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    border:1px solid var(--line); background:var(--panel); border-radius:4px;
+    font-size:12px; font-weight:600; letter-spacing:.04em; padding:6px 14px;
+    color:var(--ink); transition:opacity .18s, border-color .18s;
+  }
+  .chip i{width:14px; height:3px; border-radius:2px; display:inline-block}
+  .chip.raw i{background:var(--raw)} .chip.ours i{background:var(--ours)}
+  .chip.mark i{width:6px; height:6px; border-radius:50%; background:var(--ink)}
+  .chip:not(.on){opacity:.38}
+  .traj-meta{
+    display:flex; flex-wrap:wrap; gap:8px 26px; justify-content:center;
+    font-size:12.5px; color:var(--muted); margin-top:14px;
+  }
+  .traj-meta b{font-family:var(--mono); font-size:12px; font-weight:500; color:var(--ink)}
+  .traj-meta .drop{color:#fff}
+
+  /* ---------- Walkthrough ---------- */
+  .walk-layout{display:grid; grid-template-columns:1.5fr 1fr; gap:26px; align-items:start}
+  @media(max-width:760px){.walk-layout{grid-template-columns:1fr}}
+  .walk-steps{display:flex; flex-direction:column; margin:0; padding:0; list-style:none;
+    border-top:1px solid var(--line)}
+  .walk-steps button{
+    display:flex; align-items:baseline; gap:12px; width:100%; text-align:left;
+    background:transparent; border:0; border-bottom:1px solid var(--line);
+    font-family:var(--sans); font-size:13px; font-weight:500; color:var(--muted);
+    padding:10px 8px; cursor:pointer; line-height:1.45; transition:color .18s, background .18s;
+  }
+  .walk-steps button:hover{background:var(--wash)}
+  .walk-steps button.on{color:var(--ink); font-weight:600; background:var(--wash)}
+  .walk-steps .n{flex:none; font-family:var(--mono); font-size:11px; color:var(--faint); width:20px}
+  .walk-steps button.on .n{color:#fff}
+  .walk-cap{font-size:13px; color:#b7bdc6; line-height:1.7; margin-top:14px; min-height:6.4em}
+  .walk-cap b{color:var(--ink)}
+  .walk-eq{
+    font-family:var(--mono); font-size:12px; color:#cfcfcf; margin-top:10px;
+    padding:8px 12px; background:var(--wash); border-radius:5px; overflow-x:auto; white-space:nowrap;
+  }
+  .walk-rank{margin-top:12px; width:100%; border-collapse:collapse; display:none}
+  .walk-rank.show{display:table}
+  .walk-rank td{
+    padding:3px 8px 3px 0; border-bottom:1px solid var(--line-soft); white-space:nowrap;
+    font-family:var(--mono); font-size:10.5px; color:var(--muted);
+  }
+  .walk-rank tr.sel td{color:#fff; font-weight:600}
+  .walk-nav{display:flex; gap:8px; margin-top:14px}
+  .walk-nav button{
+    background:var(--panel); border:1px solid var(--line); border-radius:4px;
+    font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink); padding:8px 0; cursor:pointer; flex:1;
+    transition:background .18s, color .18s;
+  }
+  .walk-nav button:hover{background:#fff; color:#000; border-color:#fff}
+  .walk-nav button:disabled{opacity:.3; pointer-events:none}
+
+  /* ---------- Table ---------- */
+  .tablewrap{overflow-x:auto}
+  table.results{border-collapse:collapse; width:100%; font-size:15px}
+  table.results th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--muted); font-weight:600;
+    border-top:2px solid var(--ink); border-bottom:1px solid var(--ink);
+    padding:11px 18px 11px 0; white-space:nowrap;
+  }
+  table.results td{
+    border-bottom:1px solid var(--line-soft); padding:11px 18px 11px 0; white-space:nowrap;
+    font-family:var(--mono); font-size:13px; color:#c9ced6;
+  }
+  table.results tr:last-child td{border-bottom:2px solid var(--ink)}
+  table.results th:last-child, table.results td:last-child{padding-right:0}
+  table.results td:first-child{font-family:var(--sans); font-weight:600; font-size:14.5px; color:var(--ink)}
+  tr.ours-row td{background:var(--wash)}
+  tr.ours-row td:first-child{color:#fff; font-weight:700}
+  .tnote{font-size:12.5px; color:var(--muted); line-height:1.7; margin-top:12px}
+
+  .prose p{margin-bottom:16px; text-align:justify; hyphens:auto;
+    font-family:var(--sans); font-size:16.5px; line-height:1.8; color:#cdd1d8}
+  .prose p:last-child{margin-bottom:0}
+  .prose b{color:var(--ink)}
+
+  .bibtex-card{position:relative; max-width:var(--w-text); margin:34px auto 0}
+  .bibtex{
+    background:#080808; border:1px solid var(--line); border-radius:4px;
+    padding:22px 24px; overflow-x:auto; font-family:var(--mono);
+    font-size:12.5px; line-height:1.7; white-space:pre; color:#c3c9d2;
+  }
+  .copy-btn{
+    position:absolute; right:12px; top:12px;
+    background:var(--panel); color:var(--muted); border:1px solid var(--line);
+    border-radius:3px; font-size:10.5px; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase; padding:5px 14px; cursor:pointer; transition:all .18s;
+    font-family:var(--sans);
+  }
+  .copy-btn:hover{background:#fff; color:#000; border-color:#fff}
+
+  #overview-video{min-height:100vh; min-height:100svh; display:flex; align-items:center}
+  #overview-video > .wide{width:100%}
+  .video-slot{
+    position:relative; aspect-ratio:16/9; border-radius:4px; overflow:hidden;
+    max-height:64vh;
+    background:#07090c; border:1px solid var(--line);
+    max-width:var(--w-wide); margin:0 auto;
+  }
+  .video-slot video, .video-slot iframe{
+    position:absolute; inset:0; width:100%; height:100%; border:0; display:block;
+    object-fit:contain; background:#07090c;
+  }
+  .video-slot-empty{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px;
+  }
+  .video-slot-empty .vs-icon{
+    width:62px; height:62px; border-radius:50%; display:grid; place-items:center;
+    font-size:19px; color:var(--ink); background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.16); padding-left:4px;
+  }
+  .video-slot-empty .vs-text{font-size:13.5px; color:var(--faint); letter-spacing:.02em}
+
+  @media(max-width:640px){
+    /* video walls: keep half-labels and badges readable on a narrow tile */
+    .tile .half-tag{
+      font-size:8px; padding:2px 5px; max-width:calc(50% - 14px);
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .tile .okmark{font-size:7.5px; padding:2px 5px; letter-spacing:.04em}
+    .wall{gap:8px}
+    .wall.collapsed{max-height:560px}
+    .wall-fade{height:110px}
+    section{padding:60px 0}
+    .hero-content{padding:56px 14px 36px}
+    .brand-row{gap:10px}
+    .lead{font-size:14.5px; margin-bottom:32px}
+    .stat{padding:24px 8px 20px}
+    .walk-cap{min-height:0}
+    .lightbox video{max-height:64vh}
+    .wall-controls{gap:8px}
+    .seg button{padding:7px 14px; font-size:11px}
+    .stack > * + *{margin-top:20px}
+  }
+
+  .visitor-map{width:calc(100% - 44px); max-width:300px; margin:0 auto; padding:0 0 56px; text-align:center; overflow:hidden}
+  .visitor-map img,.visitor-map iframe{max-width:100%}
+</style>
+
+<div class="hero">
+  <div class="shade"></div>
+  <div class="glow"></div>
+  <div class="hero-content">
+        <div class="brand-row">
+      <img class="mascot" src="static/icon_480.png" alt="GROOVE mascot: a robot smoothing a jagged raw trajectory into a clean one">
+      <div class="brand-copy">
+        <h1 class="wordmark" aria-label="GROOVE"><span class="wl" data-l="G">G</span><span class="wl" data-l="R">R</span><span class="wl" data-l="O">O</span><span class="wl" data-l="O">O</span><span class="wl" data-l="V">V</span><span class="wl" data-l="E">E</span></h1>
+        <p class="full-title"><b class="a1">G</b>eometry-Guided <b class="a2">R</b>eduction <b class="a3">o</b>f <b class="a4">O</b>perational-Space
+    Jerk in <b class="a5">V</b>LA <b class="a6">E</b>xecution</p>
+      </div>
+    </div>
+    <p class="authors"><span><a href="https://www.devsangho.com" target="_blank" rel="noopener">Sangho Yun</a><sup>1</sup></span>, <span>Minsoo Kim<sup>2</sup></span>, <span>Minwoo Cho<sup>1</sup></span>, and <span>Hwanjo Yu<sup>1,2</sup></span></p>
+    <p class="affil"><img src="static/postech_emblem.png" alt="POSTECH emblem">POSTECH, <a href="https://sites.google.com/view/postechdi" target="_blank" rel="noopener">DI Lab</a></p>
+    <p class="affil-details"><sup>1</sup>Department of Computer Science and Engineering<br>
+      <sup>2</sup>Graduate School of Artificial Intelligence<br>
+      POSTECH, Pohang, South Korea<br>
+      Correspondence: <a href="mailto:hwanjoyu@postech.ac.kr">Hwanjo Yu</a></p>
+    <div class="btn-row">
+      <!-- Activate Paper with the arXiv abstract URL after the preprint is announced. -->
+      <button class="btn disabled" id="paper-link" type="button" disabled>Paper (soon)</button>
+      <button class="btn disabled" id="code-link" type="button" disabled>Code (soon)</button>
+      <a class="btn" href="#bibtex">BibTeX</a>
+    </div>
+    <p class="review-note ieee-notice">This work has been submitted to the IEEE for possible publication. Copyright may be transferred without notice, after which this version may no longer be accessible.</p>
+    <p class="review-note">Code, evaluation scripts, and experiment artifacts will be released upon publication.</p>
+  </div>
+  </div>
+
+<div class="stat-band">
+  <div class="mosaic" id="mosaic" aria-hidden="true"></div>
+  <div class="mosaic-shade"></div>
+  <div class="stat-row">
+    <div class="stat"><span class="big raw-c">&minus;33.0%</span><span class="lbl">Translational EEF jerk<br>LIBERO holdout</span></div>
+    <div class="stat"><span class="big raw-c">&minus;43.4%</span><span class="lbl">Rotational EEF jerk<br>LIBERO holdout</span></div>
+    <div class="stat"><span class="big ours-c">&minus;16.4&thinsp;/&thinsp;&minus;19.5%</span><span class="lbl">Full-trial TCP jerk<br>physical UR5e</span></div>
+    <div class="stat"><span class="big ours-c">0</span><span class="lbl">Additional VLA calls<br>no retraining</span></div>
+  </div>
+</div>
+
+<section class="alt" id="overview-video">
+  <div class="wide">
+    <span class="eyebrow">Overview</span>
+    <h2>Watch the Method and Experiments</h2>
+    <p class="lead">A 2:59 narrated overview of the method and the UR5e and LIBERO experiments.
+    The method diagrams use synthetic chunks. Physical footage is reconstructed at 3.5&nbsp;Hz
+    and shown at a labelled 4&times; playback. The two hardware examples show matched trials
+    in which both methods succeed.</p>
+    <div class="video-slot">
+      <video id="overview-player" src="static/videos/groove_overview_black.mp4"
+             poster="static/videos/groove_overview_black_poster.jpg"
+             controls preload="none" playsinline></video>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="text">
+    <span class="eyebrow">The idea</span>
+    <div class="tldr">
+      <p>Chunked VLA policies jerk in two places: <b>inside</b> each generated action chunk, and at
+      the <b>seam</b> where replanning replaces the unexecuted suffix.
+      <span class="gmark">GROOVE</span> searches <b>directional correction regions in 3D</b>
+      around the raw end-effector path. It uses the delivered commands to connect the new chunk
+      smoothly and bounds path deviation after <b>every</b> command.</p>
+      <ul class="tldr-list">
+        <li><b>One cube and thirteen directional candidates.</b> Equal-volume regions offer different ways to correct the same path. Select the lowest command-space jerk within a cube-relative deviation cap.</li>
+        <li><b>No retraining or extra VLA inference.</b> The regulator operates on each new chunk before execution.</li>
+        <li><b>33.02% / 43.42% less translational / rotational EEF jerk</b> on the LIBERO holdout, with success at 95.75% versus 93.75% for raw execution.</li>
+        <li><b>29.09% less joint-current slew</b> across 50 matched UR5e pairs, alongside lower measured TCP jerk.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="text prose">
+    <span class="eyebrow">Paper</span>
+    <h2>Abstract</h2>
+    <p>
+    Chunked vision&ndash;language&ndash;action (VLA) policies execute several commands per query,
+    but jerk within chunks and across replanning boundaries can induce oscillatory motion and
+    sharp actuator transients. We present <b class="gmark">GROOVE</b>, an online regulator that
+    searches directional correction regions around the raw three-dimensional end-effector (EEF)
+    path, without retraining or additional VLA inference. It optimizes the new chunk using delivered
+    commands as boundary conditions, reducing boundary and within-chunk jerk while bounding
+    cumulative translation and local axis&ndash;angle deviation from the raw plan after every command.
+    Using quadratic programs (QPs), <b class="gmark">GROOVE</b> generates a cube reference and
+    thirteen directional candidates, then selects the one with the lowest command-space jerk under
+    a reference-relative deviation cap. On a held-out LIBERO benchmark, <b class="gmark">GROOVE</b>
+    achieves the largest reductions among the evaluated methods, reducing translational and
+    rotational EEF jerk by 33.02% and 43.42%, respectively, with task success of 95.75% versus
+    93.75% for raw execution. Across 50 matched UR5e pairs with measured execution timing, it
+    reduces translational and rotational tool-center-point (TCP) jerk by 16.39% and 19.49% and
+    joint-current slew by 29.09%.
+</p>
+  </div>
+</section>
+
+<section class="light" id="method-figure">
+  <div class="wide">
+    <span class="eyebrow">Method at a glance</span>
+    <h2>Choose How to Correct the 3D Path</h2>
+    <figure class="fig-plate">
+      <img src="static/groove_method_figure.svg" alt="GROOVE in three stages. A places a cube or directional box at every raw-path timestamp. B generates a corrected chunk for each of fourteen settings. C selects an eligible chunk and executes its prefix.">
+      <figcaption><span class="figno">Fig. 2</span><b>GROOVE combines delivered history with one
+      raw VLA chunk</b>. A cube and thirteen equal-volume directional sets bound the allowable
+      corrections around the raw 3D path. QPs generate candidate chunks, and the selector chooses
+      the lowest command-space jerk within the deviation cap.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="alt" id="method-abc">
+  <div class="wide stack">
+    <div>
+      <span class="eyebrow">How It Works · A / B / C</span>
+      <h2>Fourteen Settings, One Corrected Chunk</h2>
+      <p class="lead">For each setting <b>k = 0…13</b>, one box bounds each timestamp of the
+      same raw chunk. A constructs a cube or directional correction region.
+      B generates a corrected chunk under each setting. C compares all 14 candidates and
+      delivers the selected prefix. The full set contains <b>one cube, 3 axes,
+      6 face diagonals, and 4 body diagonals</b>.</p>
+      <p class="lead">Explore an <b>illustrative synthetic chunk</b> with H = 8 and C = 4.
+      Every corrected curve and selection score comes from the actual GROOVE solver.
+      Drag the 3D view, select a stage or k, and highlight any timestamp.</p>
+    </div>
+    <div id="groove-abc" class="abc-viewer" data-autoplay="true"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <span class="eyebrow">All 100 Hardware Trials</span>
+    <h2>The Complete UR5e Campaign</h2>
+    <p class="lead">All <b>50 matched pairs</b> from the stacking and trash-disposal campaign,
+    including successes and failures. The footage is reconstructed at 3.5&nbsp;Hz and played at
+    4&times; speed with a measured TCP trajectory overlay. Each tile shows a <b>matched pair</b>:
+    <b style="color:var(--raw)">raw &pi;<sub>0.5</sub></b> on the left,
+    <b class="gmark">+ GROOVE</b> on the right.</p>
+    <div class="wall-controls">
+      <span class="seg" id="wall-task">
+        <button data-task="all" class="on">All</button>
+        <button data-task="stack">Stacking</button>
+        <button data-task="trash">Trash</button>
+      </span>
+    </div>
+    <div class="wall collapsed" id="wall"><div class="wall-fade"></div></div>
+    <div class="wall-more"><button data-target="wall">Show all 50 pairs</button></div>
+    <p class="wall-note" id="wall-note">Videos load as they scroll into view. The colored trace is
+    the 125-Hz TCP path projected through a camera model fitted on the campaign footage.
+    Badges mark task completion under the shared 300-command cap
+    (raw 23/50, <span class="gmark">GROOVE</span> 26/50).</p>
+  </div>
+</section>
+
+<section>
+  <div class="wide stack">
+    <div>
+      <span class="eyebrow">Simulation · LIBERO · Seed 9361</span>
+      <h2>LIBERO Execution Videos</h2>
+      <p class="lead">All <b>40 LIBERO tasks</b> for both frozen policies, &pi;<sub>0.5</sub>
+      and GR00T N1.7, <b>replayed frame-for-frame from the logged executions</b>, with the executed
+      end-effector path projected through the true simulator camera. Left:
+      <b style="color:var(--raw)">raw</b>. Right: <b class="gmark">+ GROOVE</b>.
+      Same task, same initial state, same policy seed.</p>
+    </div>
+    <div class="wall-controls">
+      <span class="seg" id="sim-policy">
+        <button data-pol="all" class="on">All</button>
+        <button data-pol="pi05">&pi;&#8320;.&#8325;</button>
+        <button data-pol="gr00t">GR00T N1.7</button>
+      </span>
+      <span class="seg" id="sim-suite">
+        <button data-suite="all" class="on">All suites</button>
+        <button data-suite="libero_spatial">Spatial</button>
+        <button data-suite="libero_object">Object</button>
+        <button data-suite="libero_goal">Goal</button>
+        <button data-suite="libero_10">Long</button>
+      </span>
+    </div>
+    <div class="wall collapsed" id="sim-wall" style="grid-template-columns:repeat(auto-fill, minmax(min(300px,100%), 1fr))"><div class="wall-fade"></div></div>
+    <div class="wall-more"><button data-target="sim-wall">Show all 80 pairs</button></div>
+    <p class="wall-note">Rendered by replaying the recorded delivered commands in the LIBERO
+    simulator. Replay terminates at the same step count as the original logged episode.
+    These 80 development pairs use seed 9361. The quantitative holdout below uses a separate
+    set of 400 assignments per method.</p>
+  </div>
+</section>
+
+
+
+<section class="alt" id="simulation-results">
+  <div class="wide stack">
+    <div>
+      <span class="eyebrow">Simulation · 400 Episodes per Method · Table I</span>
+      <h2>Lower Jerk on the LIBERO Holdout</h2>
+      <p class="lead"><span class="gmark">GROOVE</span> achieves the largest translational and
+      rotational EEF jerk reductions among the evaluated methods. All nine conditions share the
+      frozen &pi;<sub>0.5</sub> checkpoint, initial states, seeds, and suite command caps.
+      Each query predicts H = 10 commands and delivers C = 5. Whiskers show task-clustered 95% CIs.</p>
+    </div>
+    <div class="panel chart-scroll" tabindex="0" role="region" aria-label="LIBERO comparison chart, scroll horizontally on small screens">
+      <img src="static/charts/comparators.svg" alt="Executed-EEF jerk reduction from raw with 95% confidence intervals. GROOVE: 33.02% translational and 43.42% rotational. All eight regulator settings are listed in the table below.">
+    </div>
+    <div class="result-block">
+      <div class="tablewrap" tabindex="0" role="region" aria-label="LIBERO results">
+      <!-- BEGIN GENERATED MAIN TABLE -->
+<table class="results" aria-label="LIBERO holdout">
+<thead><tr><th scope="col">Method</th><th scope="col">Trans. reduction</th><th scope="col">Rot. reduction</th><th scope="col">Success</th></tr></thead>
+<tbody>
+<tr><td>Raw</td><td>Reference</td><td>Reference</td><td>93.75%</td></tr>
+<tr><td>RTC</td><td>6.37%<span class="ci">[4.73, 7.81]</span></td><td>7.46%<span class="ci">[6.15, 8.71]</span></td><td>95.00%</td></tr>
+<tr><td>SEAM (λ=.05)</td><td>10.55%<span class="ci">[9.04, 11.96]</span></td><td>13.64%<span class="ci">[12.49, 14.76]</span></td><td>94.25%</td></tr>
+<tr><td>SEAM (λ=.10)</td><td>17.41%<span class="ci">[15.79, 18.94]</span></td><td>21.38%<span class="ci">[19.92, 22.74]</span></td><td>95.25%</td></tr>
+<tr><td>SEAM (λ=.20)</td><td>22.05%<span class="ci">[20.27, 23.81]</span></td><td>25.95%<span class="ci">[24.43, 27.40]</span></td><td>97.25%</td></tr>
+<tr><td>POTR</td><td>10.92%<span class="ci">[9.32, 12.42]</span></td><td>13.03%<span class="ci">[11.66, 14.31]</span></td><td>95.50%</td></tr>
+<tr><td>Overlap ensemble</td><td>18.29%<span class="ci">[16.73, 19.76]</span></td><td>21.63%<span class="ci">[20.31, 22.83]</span></td><td>96.25%</td></tr>
+<tr><td>LiPo-QP adapter</td><td>10.84%<span class="ci">[8.81, 12.77]</span></td><td>8.17%<span class="ci">[5.35, 10.97]</span></td><td>96.00%</td></tr>
+<tr class="ours-row"><td>GROOVE</td><td>33.02%<span class="ci">[31.02, 34.97]</span></td><td>43.42%<span class="ci">[41.38, 45.36]</span></td><td>95.75%</td></tr>
+</tbody></table>
+      <!-- END GENERATED MAIN TABLE -->
+      </div>
+      <p class="tnote">Jerk reductions are relative to raw execution. Success changes by
+      +2.00&nbsp;percentage points [&minus;0.25,&nbsp;4.50] for GROOVE versus raw.
+      Query and command budgets are shared across methods. Runtime and realized path deviation
+      are measured separately.</p>
+    </div>
+  </div>
+</section>
+
+<section id="physical-results">
+  <div class="wide stack">
+    <div>
+      <span class="eyebrow">Hardware · 50 Matched Pairs · Table II</span>
+      <h2>Measured Motion and Actuator Demand</h2>
+      <p class="lead">Across stacking and trash disposal, the UR5e&rsquo;s 125-Hz telemetry records
+      <b>16.39% / 19.49% lower translational / rotational TCP jerk</b> and <b>29.09% lower
+      joint-current slew</b> under the deployed execution stack. Success is 52% (26/50) with
+      GROOVE and 46% (23/50) with raw execution.</p>
+    </div>
+    <div class="panel chart-scroll physical-chart" tabindex="0" role="region" aria-label="UR5e reduction chart, scroll horizontally on small screens">
+      <img src="static/charts/physical.svg" alt="Full-trial reductions with 95% confidence intervals: translational TCP jerk 16.39%, rotational TCP jerk 19.49%, TCP travel 6.89%, joint acceleration 15.07%, and joint-current slew 29.09%.">
+    </div>
+    <p class="tnote">The success difference is +6.00&nbsp;percentage points
+    [&minus;14.00,&nbsp;26.00]. Brackets denote 95% confidence intervals.</p>
+  </div>
+</section>
+
+<section id="bibtex" style="padding-bottom:120px">
+  <div class="wide">
+    <span class="eyebrow">Citation</span>
+    <h2>BibTeX</h2>
+    <div class="bibtex-card">
+      <button class="copy-btn" onclick="copyBib(this)">Copy</button>
+      <div class="bibtex" id="bibtex-text">@misc{yun2026groove,
+  title     = {GROOVE: Geometry-Guided Reduction of Operational-Space
+               Jerk in VLA Execution},
+  author    = {Yun, Sangho and Kim, Minsoo and Cho, Minwoo and
+               Yu, Hwanjo},
+  year      = {2026},
+  note      = {Manuscript}
+}</div>
+    </div>
+  </div>
+</section>
+
+<section id="acknowledgments">
+  <div class="text prose">
+    <span class="eyebrow">Acknowledgments</span>
+    <p>This work was supported by Samsung&rsquo;s Research Funding for Future Technology
+    Program and the AI Star Fellowship Program funded by the Ministry of Science and ICT
+    (MSIT), Republic of Korea.</p>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged trial video">
+  <button class="lb-close" id="lb-close" aria-label="Close">&times;</button>
+  <video id="lb-video" muted loop playsinline controls></video>
+  <div class="lb-bar"><span class="lb-title" id="lb-title"></span><span>raw left · groove right · 4&times; speed</span></div>
+</div>
+
+<script src="static/method_abc_data.js"></script>
+<script src="static/method_abc.js"></script>
+<script src="static/videos/manifest.js"></script>
+<script src="static/videos/sim/manifest.js"></script>
+<script>
+/* ---------- Mosaic backdrops of real campaign footage ---------- */
+(function(){
+  const N=96;
+  const io=new IntersectionObserver(es=>{
+    for (const e of es){
+      const v=e.target;
+      if (e.isIntersecting){ if (!v.src) v.src=v.dataset.src; v.play().catch(()=>{}); }
+      else v.pause();
+    }
+  }, {rootMargin:'250px'});
+  function fill(id, count, offset, dir, prefix, pad, total){
+    const box=document.getElementById(id);
+    if (!box) return;
+    for (let i=0;i<count;i++){
+      const f=prefix+String((i+offset)%total).padStart(pad,'0')+'.mp4';
+      const v=document.createElement('video');
+      v.muted=true; v.loop=true; v.playsInline=true; v.preload='none';
+      v.dataset.src=(window.VIDEO_DATA && window.VIDEO_DATA[dir+'/'+f]) || ('static/videos/'+dir+'/'+f);
+      box.appendChild(v);
+      io.observe(v);
+    }
+  }
+  // hero: every UR5e trial from the hardware campaign (50 pairs x both arms)
+  // stat band: mixed UR5e + LIBERO footage
+  fill('mosaic', 60, 50, 'mosaic_ur5e', 'u', 3, 100);
+})();
+
+function copyBib(btn){
+  const text = document.getElementById('bibtex-text').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{ btn.textContent = 'Copy'; }, 1600);
+  });
+}
+
+/* ---------- Video wall: 50 paired side-by-side trials ---------- */
+(function(){
+  const M = window.VIDEO_WALL;
+  const wall = document.getElementById('wall');
+  if (!M || !wall) return;
+  let taskFilter='all';
+  const tiles=[];
+  M.forEach(item=>{
+    const t=document.createElement('div');
+    t.className='tile';
+    const v=document.createElement('video');
+    v.muted=true; v.loop=true; v.playsInline=true; v.preload='none';
+    t.appendChild(v);
+    const mid=document.createElement('span'); mid.className='mid'; t.appendChild(mid);
+    const tl=document.createElement('span'); tl.className='half-tag l';
+    tl.textContent='raw · '+item.pair.replace('pair-','#')+' '+(item.task==='stack'?'stacking':'trash');
+    const tr=document.createElement('span'); tr.className='half-tag r'; tr.textContent='+ groove';
+    t.appendChild(tl); t.appendChild(tr);
+    const okl=document.createElement('span');
+    okl.className='okmark l '+(item.success.raw?'success':'fail');
+    okl.textContent=item.success.raw?'Success':'Fail';
+    const okr=document.createElement('span');
+    okr.className='okmark r '+(item.success.groove?'success':'fail');
+    okr.textContent=item.success.groove?'Success':'Fail';
+    t.appendChild(okl); t.appendChild(okr);
+    wall.appendChild(t);
+    tiles.push({el:t, v, item, loaded:false});
+  });
+  function srcFor(item){
+    const f = item.pair+'_'+item.task+'.mp4';
+    return (window.VIDEO_DATA && window.VIDEO_DATA[f]) || ('static/videos/'+f);
+  }
+  function refreshTile(t, visible){
+    const show = taskFilter==='all' || t.item.task===taskFilter;
+    t.el.style.display = show ? '' : 'none';
+    if (!show){ t.v.pause(); return; }
+    if (visible){
+      if (!t.loaded){ t.v.src=srcFor(t.item); t.loaded=true; }
+      t.v.play().catch(()=>{});
+    } else t.v.pause();
+  }
+  const visSet=new Set();
+  const io=new IntersectionObserver(entries=>{
+    for (const e of entries){
+      const t=tiles.find(x=>x.el===e.target);
+      if (!t) continue;
+      if (e.isIntersecting) visSet.add(t); else visSet.delete(t);
+      refreshTile(t, e.isIntersecting);
+    }
+  }, {rootMargin:'200px'});
+  tiles.forEach(t=>io.observe(t.el));
+  document.querySelectorAll('#wall-task button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#wall-task button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      taskFilter=b.dataset.task;
+      tiles.forEach(t=>refreshTile(t, visSet.has(t)));
+    });
+  });
+  tiles.forEach(t=>refreshTile(t,false));
+
+  // Lightbox
+  const lb=document.getElementById('lightbox');
+  const lbv=document.getElementById('lb-video');
+  const lbt=document.getElementById('lb-title');
+  let lbFrom=null;
+  function openLb(t){
+    lbFrom=t;
+    lbv.src = t.v.src || srcFor(t.item);
+    try{ lbv.currentTime = t.v.currentTime || 0; }catch(e){}
+    lbt.textContent = t.item.pair.replace('pair-','pair #')+' · '+(t.item.task==='stack'?'stacking':'trash disposal')
+      +(t.item.success.raw?' · raw: success':' · raw: fail')
+      +(t.item.success.groove?' · groove: success':' · groove: fail');
+    lb.classList.add('open');
+    document.body.style.overflow='hidden';
+    lbv.play().catch(()=>{});
+  }
+  function closeLb(){
+    lb.classList.remove('open');
+    document.body.style.overflow='';
+    lbv.pause(); lbv.removeAttribute('src'); lbv.load();
+  }
+  tiles.forEach(t=>t.el.addEventListener('click', ()=>openLb(t)));
+  document.getElementById('lb-close').addEventListener('click', closeLb);
+  lb.addEventListener('click', e=>{ if(e.target===lb) closeLb(); });
+  window.addEventListener('keydown', e=>{ if(e.key==='Escape' && lb.classList.contains('open')) closeLb(); });
+})();
+
+/* ---------- Simulation wall: replayed LIBERO pairs ---------- */
+(function(){
+  const M = window.SIM_WALL;
+  const wall = document.getElementById('sim-wall');
+  if (!wall) return;
+  if (!M || !M.length){
+    const sec = wall.closest('section');
+    if (sec) sec.style.display='none';
+    return;
+  }
+  const polName = p => p==='pi05' ? 'π0.5' : 'GR00T';
+  const stName = s => s.replace('libero_','').replace('10','long');
+  const tiles=[];
+  M.forEach(it=>{
+    const t=document.createElement('div');
+    t.className='tile'; t.style.aspectRatio='2/1';
+    t.title = it.label;
+    const v=document.createElement('video');
+    v.muted=true; v.loop=true; v.playsInline=true; v.preload='none';
+    t.appendChild(v);
+    const mid=document.createElement('span'); mid.className='mid'; t.appendChild(mid);
+    const tl=document.createElement('span'); tl.className='half-tag l';
+    tl.textContent='raw · '+polName(it.policy)+' '+stName(it.suite)+' #'+it.task;
+    const tr=document.createElement('span'); tr.className='half-tag r'; tr.textContent='+ groove';
+    t.appendChild(tl); t.appendChild(tr);
+    const okl=document.createElement('span');
+    okl.className='okmark l '+(it.success.raw?'success':'fail');
+    okl.textContent=it.success.raw?'Success':'Fail';
+    const okr=document.createElement('span');
+    okr.className='okmark r '+(it.success.groove?'success':'fail');
+    okr.textContent=it.success.groove?'Success':'Fail';
+    t.appendChild(okl); t.appendChild(okr);
+    wall.appendChild(t);
+    tiles.push({el:t, v, it, loaded:false});
+  });
+  function fileFor(it){
+    return it.policy+'_'+it.suite+'_task'+String(it.task).padStart(2,'0')+'.mp4';
+  }
+  function srcFor(it){
+    const f=fileFor(it);
+    return (window.VIDEO_DATA && window.VIDEO_DATA['sim/'+f]) || ('static/videos/sim/'+f);
+  }
+  let pol='all', suite='all';
+  const vis=new Set();
+  function refresh(t, visible){
+    const show = (pol==='all' || t.it.policy===pol) && (suite==='all' || t.it.suite===suite);
+    t.el.style.display = show ? '' : 'none';
+    if (!show){ t.v.pause(); return; }
+    if (visible){
+      if (!t.loaded){ t.v.src=srcFor(t.it); t.loaded=true; }
+      t.v.play().catch(()=>{});
+    } else t.v.pause();
+  }
+  const io=new IntersectionObserver(es=>{
+    for (const e of es){
+      const t=tiles.find(x=>x.el===e.target);
+      if (!t) continue;
+      if (e.isIntersecting) vis.add(t); else vis.delete(t);
+      refresh(t, e.isIntersecting);
+    }
+  }, {rootMargin:'200px'});
+  tiles.forEach(t=>io.observe(t.el));
+  function wire(segId, set){
+    document.querySelectorAll('#'+segId+' button').forEach(b=>{
+      b.addEventListener('click',()=>{
+        document.querySelectorAll('#'+segId+' button').forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');
+        set(b.dataset);
+        tiles.forEach(t=>refresh(t, vis.has(t)));
+      });
+    });
+  }
+  wire('sim-policy', d=>{ pol=d.pol; });
+  wire('sim-suite', d=>{ suite=d.suite; });
+  const lb=document.getElementById('lightbox'), lbv=document.getElementById('lb-video'),
+        lbt=document.getElementById('lb-title');
+  tiles.forEach(t=>t.el.addEventListener('click', ()=>{
+    lbv.src = t.v.src || srcFor(t.it);
+    try{ lbv.currentTime = t.v.currentTime || 0; }catch(e){}
+    lbt.textContent = polName(t.it.policy)+' · '+stName(t.it.suite)+' #'+t.it.task+' · '+t.it.label;
+    lb.classList.add('open');
+    document.body.style.overflow='hidden';
+    lbv.play().catch(()=>{});
+  }));
+})();
+
+/* ---------- Show-all toggles for the collapsed video walls ---------- */
+(function(){
+  document.querySelectorAll('.wall-more button[data-target]').forEach(btn=>{
+    const wall = document.getElementById(btn.dataset.target);
+    if (!wall) return;
+    const more = btn.textContent;
+    btn.addEventListener('click',()=>{
+      const open = wall.classList.toggle('collapsed') === false;
+      btn.textContent = open ? 'Show fewer' : more;
+      if (!open) wall.scrollIntoView({block:'start', behavior:'smooth'});
+    });
+  });
+})();
+
+</script>
+
+<footer class="visitor-map" aria-label="Visitor map">
+  <script type="text/javascript" id="mapmyvisitors" src="//mapmyvisitors.com/map.js?d=90K7xuRxNVkl1RCvm8g_Q5i24UQYT9DJI7XbwsSaZoM&cl=ffffff&w=a"></script>
+</footer>
+</body>
+</html>
