@@ -6,6 +6,40 @@
 <title>GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution</title>
 <link rel="canonical" href="https://devsangho.github.io/GROOVE-public/">
 <meta name="description" content="GROOVE searches directional correction regions around a VLA's 3D end-effector path to reduce execution jerk without retraining or additional policy inference. Results on LIBERO and a physical UR5e.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1">
+<meta name="theme-color" content="#000000">
+<meta name="keywords" content="GROOVE, vision-language-action, VLA, jerk reduction, action chunking, trajectory smoothing, robot manipulation, LIBERO, UR5e, quadratic programming, POSTECH">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GROOVE">
+<meta property="og:title" content="GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution">
+<meta property="og:description" content="An online regulator that reduces execution jerk of chunked VLA policies without retraining or additional policy inference. 33.02%/43.42% lower EEF jerk on the LIBERO holdout; validated on a physical UR5e.">
+<meta property="og:url" content="https://devsangho.github.io/GROOVE-public/">
+<meta property="og:image" content="https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black_poster.jpg">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
+<meta property="og:image:alt" content="GROOVE overview: correcting a chunked VLA end-effector path in 3D">
+<meta property="og:video" content="https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black.mp4">
+<meta property="og:video:type" content="video/mp4">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution">
+<meta name="twitter:description" content="An online regulator that reduces execution jerk of chunked VLA policies without retraining or additional policy inference. Results on LIBERO and a physical UR5e.">
+<meta name="twitter:image" content="https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black_poster.jpg">
+<meta name="twitter:image:alt" content="GROOVE overview: correcting a chunked VLA end-effector path in 3D">
+
+<!-- Google Scholar -->
+<meta name="citation_title" content="GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution">
+<meta name="citation_author" content="Yun, Sangho">
+<meta name="citation_author" content="Kim, Minsoo">
+<meta name="citation_author" content="Cho, Minwoo">
+<meta name="citation_author" content="Yu, Hwanjo">
+<meta name="citation_publication_date" content="2026">
+<meta name="citation_pdf_url" content="https://devsangho.github.io/GROOVE-public/static/paper/groove.pdf">
+<meta name="citation_abstract_html_url" content="https://devsangho.github.io/GROOVE-public/">
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="icon" type="image/png" href="static/icon_64.png">
 <link rel="apple-touch-icon" href="static/icon_192.png">
@@ -13,6 +47,57 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="static/method_abc.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://devsangho.github.io/GROOVE-public/#website",
+      "url": "https://devsangho.github.io/GROOVE-public/",
+      "name": "GROOVE",
+      "description": "Project page for GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution."
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://devsangho.github.io/GROOVE-public/#paper",
+      "headline": "GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution",
+      "name": "GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution",
+      "url": "https://devsangho.github.io/GROOVE-public/",
+      "mainEntityOfPage": "https://devsangho.github.io/GROOVE-public/",
+      "creativeWorkStatus": "Preprint",
+      "datePublished": "2026",
+      "inLanguage": "en",
+      "abstract": "Chunked vision-language-action (VLA) policies execute several commands per query, but jerk within chunks and across replanning boundaries can induce oscillatory motion and sharp actuator transients. GROOVE is an online regulator that searches directional correction regions around the raw three-dimensional end-effector path, without retraining or additional VLA inference. Using quadratic programs, it generates a cube reference and thirteen directional candidates, then selects the one with the lowest command-space jerk under a reference-relative deviation cap. On a held-out LIBERO benchmark it reduces translational and rotational EEF jerk by 33.02% and 43.42% with task success of 95.75% versus 93.75% for raw execution. Across 50 matched UR5e pairs it reduces translational and rotational TCP jerk by 16.39% and 19.49% and joint-current slew by 29.09%.",
+      "keywords": ["vision-language-action", "VLA", "jerk reduction", "action chunking", "trajectory smoothing", "robot manipulation", "LIBERO", "UR5e", "quadratic programming"],
+      "author": [
+        {"@type": "Person", "name": "Sangho Yun", "url": "https://www.devsangho.com", "affiliation": {"@type": "Organization", "name": "POSTECH"}},
+        {"@type": "Person", "name": "Minsoo Kim", "affiliation": {"@type": "Organization", "name": "POSTECH"}},
+        {"@type": "Person", "name": "Minwoo Cho", "affiliation": {"@type": "Organization", "name": "POSTECH"}},
+        {"@type": "Person", "name": "Hwanjo Yu", "affiliation": {"@type": "Organization", "name": "POSTECH"}}
+      ],
+      "image": "https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black_poster.jpg",
+      "encoding": {
+        "@type": "MediaObject",
+        "contentUrl": "https://devsangho.github.io/GROOVE-public/static/paper/groove.pdf",
+        "encodingFormat": "application/pdf"
+      }
+    },
+    {
+      "@type": "VideoObject",
+      "@id": "https://devsangho.github.io/GROOVE-public/#overview-video",
+      "name": "GROOVE overview: method and experiments",
+      "description": "A 2:59 narrated overview of the GROOVE method and the UR5e and LIBERO experiments.",
+      "thumbnailUrl": "https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black_poster.jpg",
+      "contentUrl": "https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black.mp4",
+      "encodingFormat": "video/mp4",
+      "duration": "PT2M59S",
+      "uploadDate": "2026-09-11",
+      "inLanguage": "en"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
