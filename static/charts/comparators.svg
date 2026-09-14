@@ -157,7 +157,7 @@ L 726.482824 42.12
      </g>
     </g>
    </g>
-   <g id="patch_3">
+   <g id="chart-bar-translation-0">
     <path d="M 172.224 62.694982 
 L 538.256527 62.694982 
 L 538.256527 73.7568 
@@ -165,7 +165,7 @@ L 172.224 73.7568
 z
 " clip-path="url(#p9a8c445486)" style="fill: #6fa8f5"/>
    </g>
-   <g id="patch_4">
+   <g id="chart-bar-translation-1">
     <path d="M 172.224 106.942255 
 L 242.836574 106.942255 
 L 242.836574 118.004073 
@@ -173,7 +173,7 @@ L 172.224 118.004073
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_5">
+   <g id="chart-bar-translation-2">
     <path d="M 172.224 151.189527 
 L 289.172612 151.189527 
 L 289.172612 162.251345 
@@ -181,7 +181,7 @@ L 172.224 162.251345
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_6">
+   <g id="chart-bar-translation-3">
     <path d="M 172.224 195.4368 
 L 365.216922 195.4368 
 L 365.216922 206.498618 
@@ -189,7 +189,7 @@ L 172.224 206.498618
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_7">
+   <g id="chart-bar-translation-4">
     <path d="M 172.224 239.684073 
 L 416.652141 239.684073 
 L 416.652141 250.745891 
@@ -197,7 +197,7 @@ L 172.224 250.745891
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_8">
+   <g id="chart-bar-translation-5">
     <path d="M 172.224 283.931345 
 L 293.274127 283.931345 
 L 293.274127 294.993164 
@@ -205,7 +205,7 @@ L 172.224 294.993164
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_9">
+   <g id="chart-bar-translation-6">
     <path d="M 172.224 328.178618 
 L 374.971878 328.178618 
 L 374.971878 339.240436 
@@ -213,7 +213,7 @@ L 172.224 339.240436
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_10">
+   <g id="chart-bar-translation-7">
     <path d="M 172.224 372.425891 
 L 292.387313 372.425891 
 L 292.387313 383.487709 
@@ -221,7 +221,7 @@ L 172.224 383.487709
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede"/>
    </g>
-   <g id="patch_11">
+   <g id="chart-bar-rotation-0">
     <path d="M 172.224 76.854109 
 L 653.542362 76.854109 
 L 653.542362 87.915927 
@@ -229,7 +229,7 @@ L 172.224 87.915927
 z
 " clip-path="url(#p9a8c445486)" style="fill: #6fa8f5; opacity: 0.5"/>
    </g>
-   <g id="patch_12">
+   <g id="chart-bar-rotation-1">
     <path d="M 172.224 121.101382 
 L 254.919416 121.101382 
 L 254.919416 132.1632 
@@ -237,7 +237,7 @@ L 172.224 132.1632
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_13">
+   <g id="chart-bar-rotation-2">
     <path d="M 172.224 165.348655 
 L 323.425807 165.348655 
 L 323.425807 176.410473 
@@ -245,7 +245,7 @@ L 172.224 176.410473
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_14">
+   <g id="chart-bar-rotation-3">
     <path d="M 172.224 209.595927 
 L 409.225073 209.595927 
 L 409.225073 220.657745 
@@ -253,7 +253,7 @@ L 172.224 220.657745
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_15">
+   <g id="chart-bar-rotation-4">
     <path d="M 172.224 253.8432 
 L 459.884329 253.8432 
 L 459.884329 264.905018 
@@ -261,7 +261,7 @@ L 172.224 264.905018
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_16">
+   <g id="chart-bar-rotation-5">
     <path d="M 172.224 298.090473 
 L 316.663849 298.090473 
 L 316.663849 309.152291 
@@ -269,7 +269,7 @@ L 172.224 309.152291
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_17">
+   <g id="chart-bar-rotation-6">
     <path d="M 172.224 342.337745 
 L 411.996367 342.337745 
 L 411.996367 353.399564 
@@ -277,7 +277,7 @@ L 172.224 353.399564
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="patch_18">
+   <g id="chart-bar-rotation-7">
     <path d="M 172.224 386.585018 
 L 262.789892 386.585018 
 L 262.789892 397.646836 
@@ -285,7 +285,7 @@ L 172.224 397.646836
 z
 " clip-path="url(#p9a8c445486)" style="fill: #dedede; opacity: 0.5"/>
    </g>
-   <g id="LineCollection_1">
+   <g id="chart-detail-translation-2">
     <path d="M 516.086174 68.225891 
 L 559.872621 68.225891 
 " clip-path="url(#p9a8c445486)" style="fill: none; stroke: #efefef"/>
@@ -311,7 +311,7 @@ L 391.267087 333.709527
 L 313.781704 377.9568 
 " clip-path="url(#p9a8c445486)" style="fill: none; stroke: #efefef"/>
    </g>
-   <g id="line2d_21">
+   <g id="chart-detail-translation-0">
     <defs>
      <path id="m13281f982a" d="M 0 3 
 L 0 -3 
@@ -328,7 +328,7 @@ L 0 -3
      <use xlink:href="#m13281f982a" x="269.884405" y="377.9568" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="line2d_22">
+   <g id="chart-detail-translation-1">
     <g clip-path="url(#p9a8c445486)">
      <use xlink:href="#m13281f982a" x="559.872621" y="68.225891" style="fill: #1f77b4; stroke: #efefef"/>
      <use xlink:href="#m13281f982a" x="258.799228" y="112.473164" style="fill: #1f77b4; stroke: #efefef"/>
@@ -340,7 +340,7 @@ L 0 -3
      <use xlink:href="#m13281f982a" x="313.781704" y="377.9568" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="LineCollection_2">
+   <g id="chart-detail-rotation-2">
     <path d="M 630.928602 82.385018 
 L 675.047605 82.385018 
 " clip-path="url(#p9a8c445486)" style="fill: none; stroke: #efefef"/>
@@ -366,7 +366,7 @@ L 425.298579 347.868655
 L 293.828386 392.115927 
 " clip-path="url(#p9a8c445486)" style="fill: none; stroke: #efefef"/>
    </g>
-   <g id="line2d_23">
+   <g id="chart-detail-rotation-0">
     <g clip-path="url(#p9a8c445486)">
      <use xlink:href="#m13281f982a" x="630.928602" y="82.385018" style="fill: #1f77b4; stroke: #efefef"/>
      <use xlink:href="#m13281f982a" x="240.397835" y="126.632291" style="fill: #1f77b4; stroke: #efefef"/>
@@ -378,7 +378,7 @@ L 293.828386 392.115927
      <use xlink:href="#m13281f982a" x="231.529694" y="392.115927" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="line2d_24">
+   <g id="chart-detail-rotation-1">
     <g clip-path="url(#p9a8c445486)">
      <use xlink:href="#m13281f982a" x="675.047605" y="82.385018" style="fill: #1f77b4; stroke: #efefef"/>
      <use xlink:href="#m13281f982a" x="268.775887" y="126.632291" style="fill: #1f77b4; stroke: #efefef"/>
@@ -390,56 +390,56 @@ L 293.828386 392.115927
      <use xlink:href="#m13281f982a" x="293.828386" y="392.115927" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="text_16">
+   <g id="chart-detail-translation-label-0">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="567.077986" y="70.709328" transform="rotate(-0 567.077986 70.709328)">33.02%</text>
    </g>
-   <g id="text_17">
+   <g id="chart-detail-translation-label-1">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="266.004593" y="114.956601" transform="rotate(-0 266.004593 114.956601)">6.37%</text>
    </g>
-   <g id="text_18">
+   <g id="chart-detail-translation-label-2">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="312.008075" y="159.203874" transform="rotate(-0 312.008075 159.203874)">10.55%</text>
    </g>
-   <g id="text_19">
+   <g id="chart-detail-translation-label-3">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="389.382607" y="203.451147" transform="rotate(-0 389.382607 203.451147)">17.41%</text>
    </g>
-   <g id="text_20">
+   <g id="chart-detail-translation-label-4">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="443.367416" y="247.698419" transform="rotate(-0 443.367416 247.698419)">22.05%</text>
    </g>
-   <g id="text_21">
+   <g id="chart-detail-translation-label-5">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="317.107256" y="291.945692" transform="rotate(-0 317.107256 291.945692)">10.92%</text>
    </g>
-   <g id="text_22">
+   <g id="chart-detail-translation-label-6">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="398.472452" y="336.192965" transform="rotate(-0 398.472452 336.192965)">18.29%</text>
    </g>
-   <g id="text_23">
+   <g id="chart-detail-translation-label-7">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="320.987068" y="380.440237" transform="rotate(-0 320.987068 380.440237)">10.84%</text>
    </g>
-   <g id="text_24">
+   <g id="chart-detail-rotation-label-0">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="682.252969" y="84.868456" transform="rotate(-0 682.252969 84.868456)">43.42%</text>
    </g>
-   <g id="text_25">
+   <g id="chart-detail-rotation-label-1">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="275.981252" y="129.115728" transform="rotate(-0 275.981252 129.115728)">7.46%</text>
    </g>
-   <g id="text_26">
+   <g id="chart-detail-rotation-label-2">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="343.046569" y="173.363001" transform="rotate(-0 343.046569 173.363001)">13.64%</text>
    </g>
-   <g id="text_27">
+   <g id="chart-detail-rotation-label-3">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="431.506278" y="217.610274" transform="rotate(-0 431.506278 217.610274)">21.38%</text>
    </g>
-   <g id="text_28">
+   <g id="chart-detail-rotation-label-4">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="483.1632" y="261.857547" transform="rotate(-0 483.1632 261.857547)">25.95%</text>
    </g>
-   <g id="text_29">
+   <g id="chart-detail-rotation-label-5">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="338.05824" y="306.104819" transform="rotate(-0 338.05824 306.104819)">13.03%</text>
    </g>
-   <g id="text_30">
+   <g id="chart-detail-rotation-label-6">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="432.503944" y="350.352092" transform="rotate(-0 432.503944 350.352092)">21.63%</text>
    </g>
-   <g id="text_31">
+   <g id="chart-detail-rotation-label-7">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="301.033751" y="394.599365" transform="rotate(-0 301.033751 394.599365)">8.17%</text>
    </g>
    <g id="legend_1">
-    <g id="patch_19">
+    <g id="patch_3">
      <path d="M 176.224 32.389913 
 L 196.224 32.389913 
 L 196.224 25.389913 
@@ -447,10 +447,10 @@ L 176.224 25.389913
 z
 " style="fill: #6fa8f5"/>
     </g>
-    <g id="text_32">
+    <g id="text_16">
      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #b9b9b9" x="204.224" y="32.389913" transform="rotate(-0 204.224 32.389913)">Translational</text>
     </g>
-    <g id="patch_20">
+    <g id="patch_4">
      <path d="M 287.609938 32.389913 
 L 307.609938 32.389913 
 L 307.609938 25.389913 
@@ -458,7 +458,7 @@ L 287.609938 25.389913
 z
 " style="fill: #6fa8f5; opacity: 0.5"/>
     </g>
-    <g id="text_33">
+    <g id="text_17">
      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #b9b9b9" x="315.609938" y="32.389913" transform="rotate(-0 315.609938 32.389913)">Rotational</text>
     </g>
    </g>

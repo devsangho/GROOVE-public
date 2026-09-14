@@ -242,8 +242,16 @@
   .result-block + .result-block{margin-top:48px}
   .ci{display:block; font-size:11px; color:#a1a6af; font-weight:400; margin-top:3px}
   .chart-scroll{overflow-x:auto}
-  .chart-scroll img{display:block; width:100%; min-width:660px}
-  .chart-scroll.physical-chart img{min-width:600px}
+  .chart-scroll img, .chart-scroll svg{display:block; width:100%; height:auto; min-width:660px}
+  .chart-scroll.physical-chart img, .chart-scroll.physical-chart svg{min-width:600px}
+  .chart-actions{display:flex; justify-content:flex-end; margin-top:8px; min-height:30px}
+  .chart-replay{
+    font:inherit; font-size:12px; color:var(--muted); background:none;
+    border:1px solid var(--line); border-radius:4px; padding:3px 10px; cursor:pointer;
+  }
+  .chart-replay:hover{color:var(--ink); border-color:var(--muted)}
+  .chart-replay:focus-visible{outline:2px solid var(--ours-text); outline-offset:3px}
+  .chart-replay:disabled{opacity:.45; cursor:default}
   #acknowledgments{padding-top:0}
   #acknowledgments p{font-size:14px; color:var(--muted)}
   .btn-row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
@@ -846,8 +854,11 @@
       frozen &pi;<sub>0.5</sub> checkpoint, initial states, seeds, and suite command caps.
       Each query predicts H = 10 commands and delivers C = 5. Whiskers show task-clustered 95% CIs.</p>
     </div>
-    <div class="panel chart-scroll" tabindex="0" role="region" aria-label="LIBERO comparison chart, scroll horizontally on small screens">
-      <img src="static/charts/comparators.svg" alt="Executed-EEF jerk reduction from raw with 95% confidence intervals. GROOVE: 33.02% translational and 43.42% rotational. All eight regulator settings are listed in the table below.">
+    <div class="chart-figure">
+      <div class="panel chart-scroll" data-animate-chart tabindex="0" role="region" aria-label="LIBERO comparison chart, scroll horizontally on small screens">
+        <img src="static/charts/comparators.svg" width="1040" height="650" alt="Executed-EEF jerk reduction from raw with 95% confidence intervals. GROOVE: 33.02% translational and 43.42% rotational. All eight regulator settings are listed in the table below.">
+      </div>
+      <div class="chart-actions"><button class="chart-replay" type="button" aria-label="Replay LIBERO chart animation" hidden>↻ Replay</button></div>
     </div>
     <div class="result-block">
       <div class="tablewrap" tabindex="0" role="region" aria-label="LIBERO results">
@@ -885,8 +896,11 @@
       joint-current slew</b> under the deployed execution stack. Success is 52% (26/50) with
       GROOVE and 46% (23/50) with raw execution.</p>
     </div>
-    <div class="panel chart-scroll physical-chart" tabindex="0" role="region" aria-label="UR5e reduction chart, scroll horizontally on small screens">
-      <img src="static/charts/physical.svg" alt="Full-trial reductions with 95% confidence intervals: translational TCP jerk 16.39%, rotational TCP jerk 19.49%, TCP travel 6.89%, joint acceleration 15.07%, and joint-current slew 29.09%.">
+    <div class="chart-figure">
+      <div class="panel chart-scroll physical-chart" data-animate-chart tabindex="0" role="region" aria-label="UR5e reduction chart, scroll horizontally on small screens">
+        <img src="static/charts/physical.svg" width="1040" height="420" alt="Full-trial reductions with 95% confidence intervals: translational TCP jerk 16.39%, rotational TCP jerk 19.49%, TCP travel 6.89%, joint acceleration 15.07%, and joint-current slew 29.09%.">
+      </div>
+      <div class="chart-actions"><button class="chart-replay" type="button" aria-label="Replay UR5e chart animation" hidden>↻ Replay</button></div>
     </div>
     <p class="tnote">The success difference is +6.00&nbsp;percentage points
     [&minus;14.00,&nbsp;26.00]. Brackets denote 95% confidence intervals.</p>
@@ -928,6 +942,7 @@
 
 <script src="static/method_abc_data.js"></script>
 <script src="static/method_abc.js"></script>
+<script src="static/chart_animation.js" defer></script>
 <script src="static/videos/manifest.js"></script>
 <script src="static/videos/sim/manifest.js"></script>
 <script>

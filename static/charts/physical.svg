@@ -128,7 +128,7 @@ L 667.571478 9.072
      </g>
     </g>
    </g>
-   <g id="patch_3">
+   <g id="chart-bar-physical-0">
     <path d="M 175.968 19.793455 
 L 377.402525 19.793455 
 L 377.402525 40.16907 
@@ -136,7 +136,7 @@ L 175.968 40.16907
 z
 " clip-path="url(#p9d5e9c9466)" style="fill: #6fa8f5"/>
    </g>
-   <g id="patch_4">
+   <g id="chart-bar-physical-1">
     <path d="M 175.968 68.306824 
 L 415.501795 68.306824 
 L 415.501795 88.682439 
@@ -144,7 +144,7 @@ L 175.968 88.682439
 z
 " clip-path="url(#p9d5e9c9466)" style="fill: #6fa8f5"/>
    </g>
-   <g id="patch_5">
+   <g id="chart-bar-physical-2">
     <path d="M 175.968 116.820193 
 L 260.646699 116.820193 
 L 260.646699 137.195807 
@@ -152,7 +152,7 @@ L 175.968 137.195807
 z
 " clip-path="url(#p9d5e9c9466)" style="fill: #6fa8f5"/>
    </g>
-   <g id="patch_6">
+   <g id="chart-bar-physical-3">
     <path d="M 175.968 165.333561 
 L 361.17961 165.333561 
 L 361.17961 185.709176 
@@ -160,7 +160,7 @@ L 175.968 185.709176
 z
 " clip-path="url(#p9d5e9c9466)" style="fill: #6fa8f5"/>
    </g>
-   <g id="patch_7">
+   <g id="chart-bar-physical-4">
     <path d="M 175.968 213.84693 
 L 533.48663 213.84693 
 L 533.48663 234.222545 
@@ -168,7 +168,7 @@ L 175.968 234.222545
 z
 " clip-path="url(#p9d5e9c9466)" style="fill: #6fa8f5"/>
    </g>
-   <g id="LineCollection_1">
+   <g id="chart-detail-physical-2">
     <path d="M 318.901711 29.981262 
 L 428.406386 29.981262 
 " clip-path="url(#p9d5e9c9466)" style="fill: none; stroke: #efefef"/>
@@ -185,7 +185,7 @@ L 415.993398 175.521369
 L 554.74848 224.034738 
 " clip-path="url(#p9d5e9c9466)" style="fill: none; stroke: #efefef"/>
    </g>
-   <g id="line2d_16">
+   <g id="chart-detail-physical-0">
     <defs>
      <path id="md33d9305a2" d="M 0 4 
 L 0 -4 
@@ -199,7 +199,7 @@ L 0 -4
      <use xlink:href="#md33d9305a2" x="510.749969" y="224.034738" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="line2d_17">
+   <g id="chart-detail-physical-1">
     <g clip-path="url(#p9d5e9c9466)">
      <use xlink:href="#md33d9305a2" x="428.406386" y="29.981262" style="fill: #1f77b4; stroke: #efefef"/>
      <use xlink:href="#md33d9305a2" x="445.735409" y="78.494631" style="fill: #1f77b4; stroke: #efefef"/>
@@ -208,19 +208,19 @@ L 0 -4
      <use xlink:href="#md33d9305a2" x="554.74848" y="224.034738" style="fill: #1f77b4; stroke: #efefef"/>
     </g>
    </g>
-   <g id="text_12">
+   <g id="chart-detail-physical-label-0">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="435.780438" y="32.4647" transform="rotate(-0 435.780438 32.4647)">16.39%  [11.63, 20.54]</text>
    </g>
-   <g id="text_13">
+   <g id="chart-detail-physical-label-1">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="453.109461" y="80.978069" transform="rotate(-0 453.109461 80.978069)">19.49%  [16.74, 21.95]</text>
    </g>
-   <g id="text_14">
+   <g id="chart-detail-physical-label-2">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="339.91776" y="129.491438" transform="rotate(-0 339.91776 129.491438)">6.89%  [0.23, 12.74]</text>
    </g>
-   <g id="text_15">
+   <g id="chart-detail-physical-label-3">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="423.36745" y="178.004806" transform="rotate(-0 423.36745 178.004806)">15.07%  [9.59, 19.53]</text>
    </g>
-   <g id="text_16">
+   <g id="chart-detail-physical-label-4">
     <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #ededed" x="562.122532" y="226.518175" transform="rotate(-0 562.122532 226.518175)">29.09%  [27.24, 30.82]</text>
    </g>
   </g>
