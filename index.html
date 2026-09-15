@@ -36,9 +36,13 @@
 <meta name="citation_author" content="Kim, Minsoo">
 <meta name="citation_author" content="Cho, Minwoo">
 <meta name="citation_author" content="Yu, Hwanjo">
-<meta name="citation_publication_date" content="2026">
+<meta name="citation_publication_date" content="2026/09/12">
+<meta name="citation_online_date" content="2026/09/12">
+<meta name="citation_arxiv_id" content="2609.13695">
+<meta name="citation_technical_report_institution" content="arXiv">
+<meta name="citation_technical_report_number" content="arXiv:2609.13695">
 <meta name="citation_pdf_url" content="https://devsangho.github.io/GROOVE-public/static/paper/groove.pdf">
-<meta name="citation_abstract_html_url" content="https://devsangho.github.io/GROOVE-public/">
+<meta name="citation_abstract_html_url" content="https://arxiv.org/abs/2609.13695">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="icon" type="image/png" href="static/icon_64.png">
@@ -66,8 +70,13 @@
       "url": "https://devsangho.github.io/GROOVE-public/",
       "mainEntityOfPage": "https://devsangho.github.io/GROOVE-public/",
       "creativeWorkStatus": "Preprint",
-      "datePublished": "2026",
+      "datePublished": "2026-09-12",
       "inLanguage": "en",
+      "sameAs": "https://arxiv.org/abs/2609.13695",
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "arXiv", "value": "arXiv:2609.13695"}
+      ],
+      "publisher": {"@type": "Organization", "name": "arXiv"},
       "abstract": "Chunked vision-language-action (VLA) policies execute several commands per query, but jerk within chunks and across replanning boundaries can induce oscillatory motion and sharp actuator transients. GROOVE is an online regulator that searches directional correction regions around the raw three-dimensional end-effector path, without retraining or additional VLA inference. Using quadratic programs, it generates a cube reference and thirteen directional candidates, then selects the one with the lowest command-space jerk under a reference-relative deviation cap. On a held-out LIBERO benchmark it reduces translational and rotational EEF jerk by 33.02% and 43.42% with task success of 95.75% versus 93.75% for raw execution. Across 50 matched UR5e pairs it reduces translational and rotational TCP jerk by 16.39% and 19.49% and joint-current slew by 29.09%.",
       "keywords": ["vision-language-action", "VLA", "jerk reduction", "action chunking", "trajectory smoothing", "robot manipulation", "LIBERO", "UR5e", "quadratic programming"],
       "author": [
@@ -671,8 +680,8 @@
       POSTECH, Pohang, South Korea<br>
       Correspondence: <a href="mailto:hwanjoyu@postech.ac.kr">Hwanjo Yu</a></p>
     <div class="btn-row">
-      <!-- Activate Paper with the arXiv abstract URL after the preprint is announced. -->
-      <button class="btn disabled" id="paper-link" type="button" disabled>Paper (soon)</button>
+      <a class="btn" id="paper-link" href="https://arxiv.org/abs/2609.13695" target="_blank" rel="noopener">Paper</a>
+      <a class="btn" href="static/paper/groove.pdf" target="_blank" rel="noopener">PDF</a>
       <button class="btn disabled" id="code-link" type="button" disabled>Code (soon)</button>
       <a class="btn" href="#bibtex">BibTeX</a>
     </div>
@@ -914,12 +923,15 @@
     <div class="bibtex-card">
       <button class="copy-btn" onclick="copyBib(this)">Copy</button>
       <div class="bibtex" id="bibtex-text">@misc{yun2026groove,
-  title     = {GROOVE: Geometry-Guided Reduction of Operational-Space
-               Jerk in VLA Execution},
-  author    = {Yun, Sangho and Kim, Minsoo and Cho, Minwoo and
-               Yu, Hwanjo},
-  year      = {2026},
-  note      = {Manuscript}
+  title         = {GROOVE: Geometry-Guided Reduction of Operational-Space
+                   Jerk in VLA Execution},
+  author        = {Yun, Sangho and Kim, Minsoo and Cho, Minwoo and
+                   Yu, Hwanjo},
+  year          = {2026},
+  eprint        = {2609.13695},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2609.13695}
 }</div>
     </div>
   </div>
