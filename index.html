@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="nsdtjMqfTHc3RFXsHdfFsYyI8DrtEQwmkteOcIqRevw" />
-<title>GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution</title>
+<title>GROOVE: VLA Jerk Reduction for Smooth Robot Execution</title>
 <link rel="canonical" href="https://devsangho.github.io/GROOVE-public/">
-<meta name="description" content="GROOVE searches directional correction regions around a VLA's 3D end-effector path to reduce execution jerk without retraining or additional policy inference. Results on LIBERO and a physical UR5e.">
+<meta name="description" content="GROOVE is a VLA jerk reduction method for smooth robot execution. It reduces end-effector jerk without retraining or extra VLA inference, with results on LIBERO and a physical UR5e.">
 <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1">
 <meta name="theme-color" content="#000000">
-<meta name="keywords" content="GROOVE, vision-language-action, VLA, jerk reduction, action chunking, trajectory smoothing, robot manipulation, LIBERO, UR5e, quadratic programming, POSTECH">
+<meta name="keywords" content="GROOVE, VLA jerk, VLA jerk reduction, vision-language-action, robot motion smoothness, action chunking, trajectory smoothing, robot manipulation, LIBERO, UR5e, quadratic programming, POSTECH">
+<meta name="citation_keywords" content="VLA jerk; VLA jerk reduction; vision-language-action; action chunking; trajectory smoothing; robot manipulation; quadratic programming">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -42,7 +43,7 @@
 <meta name="citation_arxiv_id" content="2609.13695">
 <meta name="citation_technical_report_institution" content="arXiv">
 <meta name="citation_technical_report_number" content="arXiv:2609.13695">
-<meta name="citation_pdf_url" content="https://devsangho.github.io/GROOVE-public/static/paper/groove.pdf">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2609.13695">
 <meta name="citation_abstract_html_url" content="https://arxiv.org/abs/2609.13695">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
@@ -61,7 +62,7 @@
       "@id": "https://devsangho.github.io/GROOVE-public/#website",
       "url": "https://devsangho.github.io/GROOVE-public/",
       "name": "GROOVE",
-      "description": "Project page for GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution."
+      "description": "Project page for GROOVE, a VLA jerk reduction method for smooth robot execution without retraining or additional policy inference."
     },
     {
       "@type": "ScholarlyArticle",
@@ -79,7 +80,7 @@
       ],
       "publisher": {"@type": "Organization", "name": "arXiv"},
       "abstract": "Chunked vision-language-action (VLA) policies execute several commands per query, but jerk within chunks and across replanning boundaries can induce oscillatory motion and sharp actuator transients. GROOVE is an online regulator that searches directional correction regions around the raw three-dimensional end-effector path, without retraining or additional VLA inference. Using quadratic programs, it generates a cube reference and thirteen directional candidates, then selects the one with the lowest command-space jerk under a reference-relative deviation cap. On a held-out LIBERO benchmark it reduces translational and rotational EEF jerk by 33.02% and 43.42% with task success of 95.75% versus 93.75% for raw execution. Across 50 matched UR5e pairs it reduces translational and rotational TCP jerk by 16.39% and 19.49% and joint-current slew by 29.09%.",
-      "keywords": ["vision-language-action", "VLA", "jerk reduction", "action chunking", "trajectory smoothing", "robot manipulation", "LIBERO", "UR5e", "quadratic programming"],
+      "keywords": ["VLA jerk", "VLA jerk reduction", "vision-language-action", "robot motion smoothness", "action chunking", "trajectory smoothing", "robot manipulation", "LIBERO", "UR5e", "quadratic programming"],
       "author": [
         {"@type": "Person", "name": "Sangho Yun", "url": "https://www.devsangho.com", "affiliation": {"@type": "Organization", "name": "POSTECH"}},
         {"@type": "Person", "name": "Minsoo Kim", "affiliation": {"@type": "Organization", "name": "POSTECH"}},
@@ -89,7 +90,7 @@
       "image": "https://devsangho.github.io/GROOVE-public/static/videos/groove_overview_black_poster.jpg",
       "encoding": {
         "@type": "MediaObject",
-        "contentUrl": "https://devsangho.github.io/GROOVE-public/static/paper/groove.pdf",
+        "contentUrl": "https://arxiv.org/pdf/2609.13695",
         "encodingFormat": "application/pdf"
       }
     },
@@ -681,7 +682,7 @@
       POSTECH, Pohang, South Korea<br>
       Correspondence: <a href="mailto:hwanjoyu@postech.ac.kr">Hwanjo Yu</a></p>
     <div class="btn-row">
-      <a class="btn" id="paper-link" href="https://arxiv.org/abs/2609.13695" target="_blank" rel="noopener">Paper</a>
+      <a class="btn" id="paper-link" href="https://arxiv.org/abs/2609.13695" target="_blank" rel="noopener">VLA Jerk Paper · arXiv</a>
       <a class="btn" href="static/paper/groove.pdf" target="_blank" rel="noopener">PDF</a>
       <button class="btn disabled" id="code-link" type="button" disabled>Code (soon)</button>
       <a class="btn" href="#bibtex">BibTeX</a>
@@ -720,7 +721,8 @@
 
 <section>
   <div class="text">
-    <span class="eyebrow">The idea</span>
+    <span class="eyebrow">VLA jerk reduction</span>
+    <h2>Why Chunked VLA Policies Jerk</h2>
     <div class="tldr">
       <p>Chunked VLA policies jerk in two places: <b>inside</b> each generated action chunk, and at
       the <b>seam</b> where replanning replaces the unexecuted suffix.

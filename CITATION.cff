@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use GROOVE, please cite the arXiv paper."
+title: "GROOVE: Geometry-Guided Reduction of Operational-Space Jerk in VLA Execution"
+type: article
+authors:
+  - family-names: Yun
+    given-names: Sangho
+  - family-names: Kim
+    given-names: Minsoo
+  - family-names: Cho
+    given-names: Minwoo
+  - family-names: Yu
+    given-names: Hwanjo
+date-released: "2026-09-12"
+identifiers:
+  - type: other
+    value: "arXiv:2609.13695"
+    description: arXiv identifier
+repository-artifact: "https://github.com/devsangho/GROOVE-public"
+url: "https://arxiv.org/abs/2609.13695"
+abstract: >-
+  GROOVE is an online regulator for VLA jerk reduction. It reduces
+  within-chunk and chunk-boundary jerk in vision-language-action policy
+  execution without retraining or additional VLA inference.
+keywords:
+  - VLA jerk
+  - VLA jerk reduction
+  - vision-language-action
+  - action chunking
+  - trajectory smoothing
+  - robot manipulation
