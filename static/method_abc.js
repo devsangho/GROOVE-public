@@ -4,9 +4,9 @@
   const D=window.GROOVE_ABC_DATA, root=document.getElementById('groove-abc');
   if(!D||!root)return;
   const names=['cube','x','y','z','xy+','xy−','xz+','xz−','yz+','yz−','xyz+++','xyz++−','xyz+−+','xyz+−−'];
-  const colors={background:'#080808',text:'#f5f5f5',muted:'#a0a0a0',grid:'#282828',
-    raw:'#ff705c',reference:'#91bbff',solution:'#5298ff',box:'#73a7d2',
-    highlight:'#f3c86c',history:'#dbe5f3',eligible:'#8edec0',rejected:'#666666',suffix:'#858585'};
+  const colors={background:'#0e141c',text:'#f2f4f7',muted:'#9aa6b5',grid:'#263140',
+    raw:'#f09a82',reference:'#c9d1dc',solution:'#a9c3e6',box:'#778daa',
+    highlight:'#f7d8ca',history:'#c9d1dc',eligible:'#7f95b3',rejected:'#4a5666',suffix:'#6f7b8a'};
   const stageNames=['A · Construct bounds','B · Generate candidates','C · Select and execute'];
   const starts=[0,28,56], total=70;
   root.innerHTML=`<div class="abc-tabs" role="group" aria-label="Method stage">${stageNames.map((x,i)=>`<button type="button" data-stage="${i}" aria-pressed="${i===0}">${x}</button>`).join('')}</div>
