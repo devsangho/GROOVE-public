@@ -5,12 +5,16 @@ type: article
 authors:
   - family-names: Yun
     given-names: Sangho
+    affiliation: POSTECH
   - family-names: Kim
     given-names: Minsoo
+    affiliation: POSTECH
   - family-names: Cho
     given-names: Minwoo
+    affiliation: POSTECH
   - family-names: Yu
     given-names: Hwanjo
+    affiliation: POSTECH
 date-released: "2026-09-12"
 identifiers:
   - type: other

@@ -5,8 +5,8 @@
   if(!D||!root)return;
   const names=['cube','x','y','z','xy+','xy−','xz+','xz−','yz+','yz−','xyz+++','xyz++−','xyz+−+','xyz+−−'];
   const colors={background:'#0e141c',text:'#f2f4f7',muted:'#9aa6b5',grid:'#263140',
-    raw:'#f09a82',reference:'#c9d1dc',solution:'#a9c3e6',box:'#778daa',
-    highlight:'#f7d8ca',history:'#c9d1dc',eligible:'#7f95b3',rejected:'#4a5666',suffix:'#6f7b8a'};
+    raw:'#f09a82',reference:'#c9d1dc',solution:'#97aecc',box:'#778daa',
+    highlight:'#f7d8ca',history:'#c9d1dc',eligible:'#778daa',rejected:'#69717c',suffix:'#8b939e'};
   const stageNames=['A · Construct bounds','B · Generate candidates','C · Select and execute'];
   const starts=[0,28,56], total=70;
   root.innerHTML=`<div class="abc-tabs" role="group" aria-label="Method stage">${stageNames.map((x,i)=>`<button type="button" data-stage="${i}" aria-pressed="${i===0}">${x}</button>`).join('')}</div>
@@ -59,7 +59,7 @@
     for(let x=-.5;x<=3.4;x+=.4)line([P([x,-.65,floor]),P([x,.65,floor])],colors.grid,1,[],.55);
     for(let y=-.6;y<=.7;y+=.3)line([P([-.6,y,floor]),P([3.4,y,floor])],colors.grid,1,[],.55);
     const showHistory=S.stage===1;
-    if(showHistory){for(let i=1;i<D.history_path.length;i++)arrow(P(D.history_path[i-1]),P(D.history_path[i]),colors.history,3,1,[2,4]);const h=P(D.history_path[0]);text(h[0],h[1]-12,'h₋₂, h₋₁',colors.history,13);}
+    if(showHistory){for(let i=1;i<D.history_path.length;i++)arrow(P(D.history_path[i-1]),P(D.history_path[i]),colors.history,3,1,[2,3]);const h=P(D.history_path[0]);text(h[0],h[1]-12,'h₋₂, h₋₁',colors.history,13);}
     let visible=D.H;
     if(S.stage===0&&S.automated)visible=Math.min(D.H,1+Math.floor(S.fraction/.42*D.H));
     if(S.stage<2||S.phase>=.57){
@@ -67,11 +67,11 @@
       order.forEach(({p,t})=>box(p,c,P,t===S.t,S.stage===2?.5:1));
     }
     if(S.stage===2&&S.phase<.6){
-      D.candidates.forEach(cand=>line(cand.path.map(P),cand.eligible?colors.eligible:colors.rejected,cand.eligible?1.7:1,cand.eligible?[]:[2,4],cand.eligible?.58:.3));
+      D.candidates.forEach(cand=>line(cand.path.map(P),cand.eligible?colors.eligible:colors.rejected,cand.eligible?1.7:1,cand.eligible?[]:[2,3],cand.eligible?.58:.3));
     }
     // Arrows encode the original delta commands; their endpoints are cumulative positions.
     const rp=[[0,0,0],...D.raw_path].map(P);
-    for(let i=1;i<rp.length;i++)arrow(rp[i-1],rp[i],colors.raw,2,.9,[6,4]);
+    for(let i=1;i<rp.length;i++)arrow(rp[i-1],rp[i],colors.raw,1.6,.9,[4,4]);
     D.raw_path.forEach((p,t)=>{const v=P(p);dot2(v,colors.raw,3.1,true);text(v[0]+4,v[1]-9,`t${t}`,t===S.t?colors.highlight:colors.muted,12);});
     if(S.stage===1&&(!S.automated||S.fraction>.18)){
       const pts=c.path.map(P);line([P([0,0,0]),...pts],colors.solution,3.5);
@@ -90,7 +90,7 @@
       const winner=D.candidates[D.selected_k],pts=winner.path.map(P),committing=S.phase>=.8;
       if(committing){
         const delivered=Math.min(D.C,Math.max(1,Math.floor((S.phase-.8)/.2*D.C)+1));
-        line(pts,colors.suffix,2,[5,5],.5);
+        line(pts,colors.suffix,1.2,[2,3],.5);
         line([P([0,0,0]),...pts.slice(0,delivered)],colors.solution,4);
         pts.forEach((p,t)=>dot2(p,t<delivered?colors.solution:colors.suffix,4,t>=delivered));
       }else{line([P([0,0,0]),...pts],colors.solution,4);pts.forEach(p=>dot2(p,colors.solution,4));}
@@ -105,7 +105,7 @@
     text(18,53,S.stage===0?`${visible} of ${D.H} boxes · same setting at every t`:S.stage===1?`${D.H} commands optimized together`:`${D.candidates.filter(c=>c.eligible).length} eligible, including reference`,colors.muted,13);
     const ly=H-18;
     const lx=narrow?18:112;
-    line([[lx,ly-4],[lx+20,ly-4]],colors.raw,2,[6,4]);dot2([lx+10,ly-4],colors.raw,2.6,true);text(lx+28,ly,narrow?'raw':'raw path',colors.muted,12);
+    line([[lx,ly-4],[lx+20,ly-4]],colors.raw,1.6,[4,4]);dot2([lx+10,ly-4],colors.raw,2.6,true);text(lx+28,ly,narrow?'raw':'raw path',colors.muted,12);
     if(S.stage>0){const qx=narrow?95:220;line([[qx,ly-4],[qx+20,ly-4]],colors.solution,3);dot2([qx+10,ly-4],colors.solution,3);text(qx+29,ly,narrow?'corrected':'corrected path',colors.muted,12);}
     text(W-18,ly,narrow?`t = ${S.t}`:`time slice t = ${S.t}`,colors.highlight,12,'right');
     canvas.dataset.boxCount=String(boxCount);canvas.dataset.k=String(S.k);canvas.dataset.stage=String(S.stage);
